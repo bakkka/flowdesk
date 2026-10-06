@@ -1,0 +1,140 @@
+// Flowdesk data model — SQLite for local development.
+// Switching to Postgres later only requires changing the datasource provider.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         String    @default("owner")
+  createdAt    DateTime  @default(now())
+  lastLoginAt  DateTime?
+}
+
+model Plan {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  nameRu      String
+  nameEn      String
+  taglineRu   String
+  taglineEn   String
+  priceRub    Int
+  priceStars  Int
+  durationDays Int
+  featuresRu  String
+  featuresEn  String
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  sort        Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  users     User[]
+  payments  Payment[]
+  materials Material[]
+}
+
+model User {
+  id                String    @id @default(cuid())
+  telegramId        String    @unique
+  username          String?
+  firstName         String
+  lastName          String?
+  language          String    @default("ru")
+  planCode          String?
+  plan              Plan?     @relation(fields: [planCode], references: [code])
+  subscriptionEndsAt DateTime?
+  status            String    @default("active")
+  segment           String    @default("new")
+  source            String    @default("organic")
+  createdAt         DateTime  @default(now())
+  lastActiveAt      DateTime  @default(now())
+
+  payments Payment[]
+  events   Event[]
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([planCode])
+}
+
+model Payment {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planCode   String
+  plan       Plan     @relation(fields: [planCode], references: [code])
+  amount     Int
+  currency   String   @default("RUB")
+  provider   String   @default("mock")
+  status     String   @default("paid")
+  externalId String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([status])
+}
+
+model Material {
+  id         String   @id @default(cuid())
+  titleRu    String
+  titleEn    String
+  summaryRu  String   @default("")
+  summaryEn  String   @default("")
+  bodyRu     String   @default("")
+  bodyEn     String   @default("")
+  kind       String   @default("lesson")
+  minPlan    String
+  minPlanRef Plan     @relation(fields: [minPlan], references: [code])
+  durationMin Int     @default(10)
+  isPublished Boolean @default(true)
+  sort       Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([minPlan])
+}
+
+model Broadcast {
+  id         String    @id @default(cuid())
+  title      String
+  textRu     String
+  textEn     String
+  audience   String    @default("all")
+  status     String    @default("draft")
+  scheduledAt DateTime?
+  sentAt     DateTime?
+  recipients Int       @default(0)
+  delivered  Int       @default(0)
+  failed     Int       @default(0)
+  openRate   Int       @default(0)
+  createdAt  DateTime  @default(now())
+
+  @@index([status])
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type      String
+  label     String?
+  meta      String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type])
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
