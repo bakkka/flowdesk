@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: #070b10;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(42, 171, 238, 0.35);
+  color: #fff;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #22303f transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #22303f;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #2d4054;
+  background-clip: content-box;
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-ink-850/70 shadow-card backdrop-blur-sm;
+  }
+
+  .card-hover {
+    @apply transition duration-200 hover:border-accent/30 hover:shadow-glow;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-line bg-ink-900/80 px-3.5 py-2.5 text-sm text-slate-100 outline-none transition
+      placeholder:text-slate-500 focus:border-accent/60 focus:ring-2 focus:ring-accent/15;
+  }
+
+  .label {
+    @apply mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold
+      transition active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-sm {
+    @apply rounded-lg px-3 py-1.5 text-[13px];
+  }
+
+  .btn-primary {
+    @apply bg-accent text-ink-950 shadow-glow hover:bg-accent-soft;
+  }
+
+  .btn-ghost {
+    @apply border border-line bg-ink-800/60 text-slate-200 hover:border-accent/40 hover:text-white;
+  }
+
+  .btn-danger {
+    @apply border border-rose/30 bg-rose/10 text-rose hover:bg-rose/20;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-ink-800/70 px-2.5 py-1
+      text-[11px] font-medium text-slate-300;
+  }
+
+  .table-head {
+    @apply text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500;
+  }
+
+  .link-muted {
+    @apply text-slate-400 transition hover:text-white;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-white via-slate-100 to-accent-soft bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 46px 46px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 20%, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 20%, transparent 78%);
+  }
+
+  .bg-glow {
+    background:
+      radial-gradient(60% 50% at 15% 0%, rgba(42, 171, 238, 0.16), transparent 70%),
+      radial-gradient(45% 40% at 85% 5%, rgba(167, 139, 250, 0.12), transparent 70%);
+  }
+
+  .animate-delay-1 {
+    animation-delay: 80ms;
+  }
+  .animate-delay-2 {
+    animation-delay: 160ms;
+  }
+  .animate-delay-3 {
+    animation-delay: 240ms;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
