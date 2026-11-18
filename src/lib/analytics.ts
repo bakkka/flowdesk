@@ -47,8 +47,7 @@ function dayKey(date: Date): string {
 
 export function lastDays(count: number, endOffset = 0): Date[] {
   const anchor = startOfDay(new Date());
-  // endOffset=1 ends the series yesterday, so a partial current day doesn't
-  // create a cliff at the right edge of the chart.
+
   const end = new Date(anchor.getTime() - endOffset * DAY);
   return Array.from({ length: count }, (_, i) => new Date(end.getTime() - (count - 1 - i) * DAY));
 }

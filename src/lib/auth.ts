@@ -20,7 +20,6 @@ export async function getCurrentAdmin(): Promise<AdminUser | null> {
   return { id: admin.id, email: admin.email, name: admin.name, role: admin.role };
 }
 
-/** Server-side guard for every /admin page. */
 export async function requireAdmin(): Promise<AdminUser> {
   const admin = await getCurrentAdmin();
   if (!admin) redirect("/login");

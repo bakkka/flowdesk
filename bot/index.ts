@@ -3,10 +3,10 @@ import { PrismaClient } from "@prisma/client";
 import { normalizeLang, t, type Lang } from "./i18n";
 
 try {
-  // Node 20.12+ — reads .env without extra dependencies.
+
   (process as unknown as { loadEnvFile?: (path: string) => void }).loadEnvFile?.(".env");
 } catch {
-  /* .env is optional */
+
 }
 
 const prisma = new PrismaClient();
@@ -96,7 +96,6 @@ async function getPlans(): Promise<PlanRow[]> {
   });
 }
 
-/** Expired paid plans fall back to free access. */
 function effectivePlan(user: { planCode: string | null; subscriptionEndsAt: Date | null }): string {
   if (!user.planCode || user.planCode === "free") return "free";
   if (!user.subscriptionEndsAt || user.subscriptionEndsAt < new Date()) return "free";
@@ -114,7 +113,7 @@ async function notifyAdmin(text: string) {
   try {
     await bot.api.sendMessage(chatId, text);
   } catch {
-    /* admin notifications are best-effort */
+
   }
 }
 
@@ -151,8 +150,6 @@ async function activateSubscription(
   return endsAt;
 }
 
-/* ------------------------------------------------------------- keyboards */
-
 function languageKeyboard() {
   return new InlineKeyboard()
     .text("🇷🇺 Русский", "lang:ru")
@@ -177,13 +174,11 @@ async function sendMenu(ctx: Context, lang: Lang, edit = false) {
       await ctx.editMessageText(d.menuTitle, { reply_markup: keyboard });
       return;
     } catch {
-      /* message may be unchanged */
+
     }
   }
   await ctx.reply(d.menuTitle, { reply_markup: keyboard });
 }
-
-/* ---------------------------------------------------------------- start */
 
 bot.command("start", async (ctx) => {
   const user = await touchUser(ctx);
@@ -212,8 +207,6 @@ bot.command("help", async (ctx) => {
   });
 });
 
-/* --------------------------------------------------------------- language */
-
 bot.callbackQuery(/^lang:(ru|en)$/, async (ctx) => {
   const lang = ctx.match[1] as Lang;
   const user = await touchUser(ctx);
@@ -227,8 +220,6 @@ bot.callbackQuery(/^lang:(ru|en)$/, async (ctx) => {
     reply_markup: await menuKeyboard(lang),
   });
 });
-
-/* ---------------------------------------------------------------- plans */
 
 bot.callbackQuery("plans", async (ctx) => {
   const user = await touchUser(ctx);
@@ -368,8 +359,6 @@ bot.callbackQuery(/^confirm:(.+)$/, async (ctx) => {
   });
 });
 
-/* ------------------------------------------------------------ materials */
-
 bot.callbackQuery("materials", async (ctx) => {
   const user = await touchUser(ctx);
   if (!user) return;
@@ -448,8 +437,6 @@ bot.callbackQuery(/^mat:(.+)$/, async (ctx) => {
   });
 });
 
-/* --------------------------------------------------------------- profile */
-
 bot.callbackQuery("profile", async (ctx) => {
   const user = await touchUser(ctx);
   if (!user) return;
@@ -488,8 +475,6 @@ bot.callbackQuery("profile", async (ctx) => {
   }
 });
 
-/* ------------------------------------------------------------------ misc */
-
 bot.callbackQuery("help", async (ctx) => {
   const user = await touchUser(ctx);
   const lang = normalizeLang(user?.language);
@@ -510,8 +495,6 @@ bot.callbackQuery("menu", async (ctx) => {
   await ctx.answerCallbackQuery();
   await sendMenu(ctx, normalizeLang(user.language), true);
 });
-
-/* --------------------------------------------------------------- payments */
 
 bot.on("pre_checkout_query", async (ctx) => {
   await ctx.answerPreCheckoutQuery(true);

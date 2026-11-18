@@ -1,6 +1,3 @@
-// Flowdesk data model — SQLite for local development.
-// Switching to Postgres later only requires changing the datasource provider.
-
 generator client {
   provider = "prisma-client-js"
 }

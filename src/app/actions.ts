@@ -23,8 +23,6 @@ function bool(formData: FormData, key: string): boolean {
   return value === "on" || value === "true" || value === "1";
 }
 
-/* ------------------------------------------------------------------ auth */
-
 export async function signIn(formData: FormData): Promise<void> {
   const email = str(formData, "email").toLowerCase();
   const password = str(formData, "password");
@@ -45,10 +43,6 @@ export async function signOut(): Promise<void> {
   await destroySession();
   redirect("/login");
 }
-
-/* --------------------------------------------------------------- locale */
-
-/* ---------------------------------------------------------------- users */
 
 export async function changeUserPlan(formData: FormData): Promise<void> {
   await requireAdmin();
@@ -102,8 +96,6 @@ export async function toggleUserBlock(formData: FormData): Promise<void> {
   revalidatePath(`/admin/users/${userId}`);
   redirect(`/admin/users/${userId}?ok=blocked`);
 }
-
-/* ---------------------------------------------------------------- plans */
 
 export async function savePlan(formData: FormData): Promise<void> {
   await requireAdmin();
@@ -160,8 +152,6 @@ export async function deletePlan(formData: FormData): Promise<void> {
   revalidatePath("/admin/plans");
   redirect("/admin/plans?ok=deleted");
 }
-
-/* ----------------------------------------------------------- broadcasts */
 
 function audienceWhere(audience: string) {
   const now = new Date();
@@ -248,8 +238,6 @@ export async function saveBroadcast(formData: FormData): Promise<void> {
   redirect(intent === "send" ? "/admin/broadcasts?ok=sent" : "/admin/broadcasts?ok=draft");
 }
 
-/* -------------------------------------------------------------- content */
-
 export async function saveMaterial(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = str(formData, "id");
@@ -298,8 +286,6 @@ export async function toggleMaterialPublish(formData: FormData): Promise<void> {
   revalidatePath("/admin/content");
   redirect("/admin/content?ok=saved");
 }
-
-/* ------------------------------------------------------------- settings */
 
 export async function saveSettings(formData: FormData): Promise<void> {
   await requireAdmin();

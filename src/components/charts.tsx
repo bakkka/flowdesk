@@ -23,7 +23,6 @@ const W = 640;
 const H = 210;
 const PAD = { top: 16, right: 10, bottom: 26, left: 10 };
 
-/** Catmull-Rom → cubic bezier, keeps the line smooth without a chart library. */
 function smoothPath(points: { x: number; y: number }[]): string {
   if (points.length === 0) return "";
   if (points.length < 3) {

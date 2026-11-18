@@ -78,7 +78,7 @@ export default async function LandingPage() {
       </header>
 
       <main>
-        {/* hero */}
+
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-grid" aria-hidden="true" />
           <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr] lg:pb-24">
@@ -134,7 +134,6 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* features */}
         <section id="features" className="border-t border-line/60 py-16 sm:py-20">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
             <div className="max-w-2xl">
@@ -164,7 +163,6 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* flow */}
         <section className="border-t border-line/60 bg-ink-900/30 py-16 sm:py-20">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
             <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
@@ -193,7 +191,6 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* case */}
         <section id="case" className="border-t border-line/60 py-16 sm:py-20">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
             <div className="flex flex-wrap items-end justify-between gap-3">
@@ -237,7 +234,6 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* stack */}
         <section id="stack" className="border-t border-line/60 bg-ink-900/30 py-16 sm:py-20">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
             <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
@@ -264,7 +260,6 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* cta */}
         <section className="py-16 sm:py-20">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
             <div className="relative overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-br from-accent/12 via-ink-900 to-ink-900 p-8 sm:p-12">

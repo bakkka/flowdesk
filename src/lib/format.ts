@@ -59,7 +59,6 @@ export function formatRelative(locale: Locale, date: Date | string): string {
   return rtf.format(Math.round(days / 30), "month");
 }
 
-/** "D MMM" — compact label for chart axes. */
 export function formatShortDate(locale: Locale, date: Date): string {
   return new Intl.DateTimeFormat(locale === "ru" ? "ru-RU" : "en-US", {
     day: "numeric",

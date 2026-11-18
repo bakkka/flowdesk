@@ -2,7 +2,6 @@ import crypto from "node:crypto";
 
 const KEY_LENGTH = 64;
 
-/** scrypt$salt$hash — no native build step required. */
 export function hashPassword(password: string): string {
   const salt = crypto.randomBytes(16).toString("hex");
   const hash = crypto.scryptSync(password, salt, KEY_LENGTH).toString("hex");

@@ -1,12 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../src/lib/password";
 
-/**
- * Deterministic demo dataset.
- * The same seed is used by `npm run db:seed` and by the "rebuild demo data"
- * button in Settings, so a demo always looks identical.
- */
-
 export const DEMO_ADMIN = {
   email: "admin@flowdesk.app",
   password: "flowdesk",
@@ -62,7 +56,6 @@ export const DEMO_PLANS = [
   },
 ];
 
-/** Small deterministic PRNG — reproducible demos. */
 function mulberry32(seed: number) {
   let a = seed >>> 0;
   return () => {
@@ -115,7 +108,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
   const pick = <T,>(items: T[]): T => items[Math.floor(rand() * items.length)];
   const between = (min: number, max: number) => min + rand() * (max - min);
 
-  // --- wipe (child rows first) -------------------------------------------
   await prisma.event.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.user.deleteMany();
@@ -125,7 +117,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
   await prisma.setting.deleteMany();
   await prisma.admin.deleteMany();
 
-  // --- staff --------------------------------------------------------------
   await prisma.admin.create({
     data: {
       id: "admin_owner",
@@ -136,7 +127,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
     },
   });
 
-  // --- plans --------------------------------------------------------------
   for (const plan of DEMO_PLANS) {
     await prisma.plan.create({
       data: { ...plan, isActive: true, createdAt: new Date(now - 150 * DAY) },
@@ -144,7 +134,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
   }
   const planByCode = new Map(DEMO_PLANS.map((p) => [p.code, p]));
 
-  // --- users --------------------------------------------------------------
   const users: {
     id: string;
     telegramId: string;
@@ -162,7 +151,7 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
   }[] = [];
 
   for (let i = 0; i < userCount; i += 1) {
-    // More registrations closer to today: pow > 1 biases toward 0.
+
     const daysAgo = Math.floor(Math.pow(rand(), 1.25) * 120);
     const createdAt = new Date(now - daysAgo * DAY - Math.floor(rand() * DAY));
 
@@ -173,7 +162,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
 
     const source = SOURCES[weighted(rand, SOURCE_WEIGHTS)];
 
-    // Paid share grows for older users — looks like a maturing funnel.
     const paidChance = (0.24 + Math.min(0.22, ((120 - daysAgo) / 120) * 0.22)) * (daysAgo === 0 ? 0.5 : 1);
     let planCode: string | null = null;
     if (rand() < paidChance) {
@@ -215,7 +203,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
 
   await prisma.user.createMany({ data: users });
 
-  // --- payments -----------------------------------------------------------
   type PaymentRow = {
     id: string;
     userId: string;
@@ -242,7 +229,7 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
       let paidAt = new Date(user.createdAt.getTime() + k * 29 * DAY + 2 * 3600_000);
       if (paidAt.getTime() > now) {
         if (k > 0) continue;
-        // Every paying user gets at least one recent payment.
+
         paidAt = new Date(now - Math.floor(between(1, 6)) * 3_600_000);
       }
 
@@ -263,7 +250,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
     }
   }
 
-  // A few renewals today keep the last bucket of the revenue chart alive.
   const paidUsers = users.filter((user) => user.planCode);
   for (let i = 0; i < 20 && paidUsers.length > 0; i += 1) {
     const user = paidUsers[Math.floor(rand() * paidUsers.length)];
@@ -285,7 +271,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
 
   await prisma.payment.createMany({ data: payments });
 
-  // --- events -------------------------------------------------------------
   const eventTypes = ["menu", "material_open", "plan_view", "start", "payment", "broadcast_sent"];
   const eventWeights = [0.42, 0.24, 0.14, 0.08, 0.07, 0.05];
   const events: {
@@ -311,7 +296,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
   events.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   await prisma.event.createMany({ data: events });
 
-  // --- materials ----------------------------------------------------------
   await prisma.material.createMany({
     data: [
       {
@@ -421,7 +405,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
     ].map((m, i) => ({ ...m, isPublished: true, createdAt: new Date(now - (30 - i) * DAY) })),
   });
 
-  // --- broadcasts ---------------------------------------------------------
   await prisma.broadcast.createMany({
     data: [
       {
@@ -482,7 +465,6 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
     ],
   });
 
-  // --- settings -----------------------------------------------------------
   await prisma.setting.createMany({
     data: [
       { key: "admin_chat_id", value: "482113377" },

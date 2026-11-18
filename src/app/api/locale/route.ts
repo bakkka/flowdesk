@@ -1,10 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALE_COOKIE, isLocale } from "@/lib/format";
 
-/**
- * Cookie-based locale switching through a plain GET redirect.
- * Works without JavaScript and avoids a full RSC revalidation on submit.
- */
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const requested = url.searchParams.get("to");
