@@ -467,7 +467,7 @@ export async function seedDatabase(prisma: PrismaClient, userCount = 1240): Prom
 
   await prisma.setting.createMany({
     data: [
-      { key: "admin_chat_id", value: "482113377" },
+      { key: "admin_chat_id", value: "" },
       { key: "app_url", value: "http://localhost:3000" },
       { key: "currency", value: "RUB" },
       { key: "payment_provider", value: "mock" },

@@ -107,13 +107,44 @@ function rankOf(code: string | null, plans: PlanRow[]): number {
   return index === -1 ? 0 : index;
 }
 
+const CHAT_ID_RE = /^-?\d+$/;
+const CHAT_USERNAME_RE = /^@[A-Za-z][A-Za-z0-9_]{4,31}$/;
+
+// Priority: admin panel setting (Setting.admin_chat_id) → env fallback.
+// Re-read on every send so changes made in the admin panel apply immediately.
+async function getAdminChatId(): Promise<string | null> {
+  let fromDb = "";
+  try {
+    const row = await prisma.setting.findUnique({ where: { key: "admin_chat_id" } });
+    fromDb = row?.value.trim() ?? "";
+  } catch (error) {
+    console.warn(
+      "⚠  Could not read admin_chat_id from the database:",
+      error instanceof Error ? error.message : error,
+    );
+  }
+
+  const candidate = fromDb || process.env.TELEGRAM_ADMIN_CHAT_ID?.trim() || "";
+  if (!candidate) return null;
+
+  if (!CHAT_ID_RE.test(candidate) && !CHAT_USERNAME_RE.test(candidate)) {
+    console.warn("⚠  Ignoring invalid admin chat id: expected a numeric id or @username");
+    return null;
+  }
+
+  return candidate;
+}
+
 async function notifyAdmin(text: string) {
-  const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID?.trim();
+  const chatId = await getAdminChatId();
   if (!chatId) return;
   try {
     await bot.api.sendMessage(chatId, text);
-  } catch {
-
+  } catch (error) {
+    console.warn(
+      "⚠  Could not notify the admin:",
+      error instanceof Error ? error.message : error,
+    );
   }
 }
 
@@ -538,6 +569,13 @@ async function main() {
   const me = await bot.api.getMe();
   console.log(`✔ @${me.username} is online (${me.first_name})`);
 
+  const adminChatId = await getAdminChatId();
+  console.log(
+    adminChatId
+      ? "→ admin notifications: enabled"
+      : "→ admin notifications: off (set a chat id in the admin panel or TELEGRAM_ADMIN_CHAT_ID)",
+  );
+
   if (process.argv.includes("--once")) {
     await prisma.$disconnect();
     return;
@@ -555,7 +593,14 @@ async function main() {
 }
 
 main().catch(async (error) => {
-  console.error(error);
+  if (error instanceof GrammyError) {
+    const hint = error.error_code === 401 ? " Check TELEGRAM_BOT_TOKEN." : "";
+    console.error(`✖ Telegram API error: ${error.error_code} ${error.description}.${hint}`);
+  } else if (error instanceof HttpError) {
+    console.error("✖ Network error while contacting Telegram:", error.message);
+  } else {
+    console.error(error);
+  }
   await prisma.$disconnect();
   process.exit(1);
 });

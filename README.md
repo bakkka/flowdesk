@@ -51,21 +51,39 @@ npm run dev       # http://localhost:3000
 
 ### Бот
 
-1. Создайте бота у [@BotFather](https://t.me/BotFather) и получите токен.
-2. Укажите его в `.env`:
+Бот — отдельный долгоживущий процесс (polling). Сайт и админка работают без него,
+но без запущенного бота команды Telegram не обрабатываются. Без токена бот не падает,
+а печатает инструкцию и выходит с кодом `0`.
+
+1. Создайте бота у [@BotFather](https://t.me/BotFather) (`/newbot`) и скопируйте токен.
+2. Укажите токен и публичную ссылку в `.env`:
 
 ```env
 TELEGRAM_BOT_TOKEN="123456:ABC..."
-TELEGRAM_ADMIN_CHAT_ID="ваш_chat_id"   # необязательно
+TELEGRAM_ADMIN_CHAT_ID="123456789"          # необязательно, fallback
+NEXT_PUBLIC_TELEGRAM_BOT_URL="https://t.me/your_bot"
 ```
 
-3. Запустите:
+3. **Chat ID администратора** удобнее задать в админке: `/admin/settings` → «Chat ID администратора».
+   Значение хранится в БД (`Setting.admin_chat_id`), приоритетнее `TELEGRAM_ADMIN_CHAT_ID`
+   и перечитывается ботом при каждой отправке — перезапуск не нужен.
+   Свой id можно узнать у [@userinfobot](https://t.me/userinfobot) или из `getUpdates`.
+4. Запустите бота и держите процесс запущенным:
 
 ```bash
 npm run bot
 ```
 
-Без токена бот не падает, а печатает инструкцию. Проверить токен без запуска polling: `npm run bot:once`.
+5. Проверка без polling: `npm run bot:once` делает `getMe`, печатает `@username`
+   и выходит. Неверный токен даёт понятную ошибку Telegram.
+
+`NEXT_PUBLIC_TELEGRAM_BOT_URL` — необязательная ссылка на бота: она появляется на лендинге
+(hero, финальный CTA, футер) и в настройках админки. `NEXT_PUBLIC_*` подставляется на этапе
+сборки, поэтому после изменения нужен перезапуск `npm run dev` или redeploy. Пустое значение
+скрывает ссылку.
+
+> В production polling-процесс должен жить постоянно (Railway/Fly/VPS) либо используйте
+> webhook. Vercel не держит долгоживущие процессы, поэтому бот туда не деплоится.
 
 ## Скрипты
 
@@ -77,7 +95,8 @@ npm run bot
 | `npm run setup` | схема БД + демо-данные |
 | `npm run db:seed` | пересоздать демо-данные |
 | `npm run db:reset` | сбросить схему и засеять заново |
-| `npm run bot` | запустить Telegram-бота |
+| `npm run bot` | запустить Telegram-бота (polling) |
+| `npm run bot:once` | проверить токен через `getMe` и выйти |
 
 ## Структура
 
@@ -114,8 +133,9 @@ docs/
 ## Деплой (когда будете готовы)
 
 1. Postgres (Neon/Supabase) → поменять `provider` на `postgresql` и `DATABASE_URL`.
-2. Vercel: переменные `DATABASE_URL`, `SESSION_SECRET`, `TELEGRAM_BOT_TOKEN`.
-3. Бот — отдельный процесс (Railway/Fly/VPS), тот же `DATABASE_URL`.
+2. Vercel: `DATABASE_URL`, `SESSION_SECRET`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_TELEGRAM_BOT_URL`.
+3. Бот — отдельный постоянно запущенный процесс (Railway/Fly/VPS), тот же `DATABASE_URL`,
+   `TELEGRAM_BOT_TOKEN`; chat id задаётся в админке или через `TELEGRAM_ADMIN_CHAT_ID`.
 4. `prisma migrate deploy` + seed для демо-стенда.
 
 > Данные в демо синтетические, оплата имитируется. Это портфолио-кейс, а не продакшн-сервис.

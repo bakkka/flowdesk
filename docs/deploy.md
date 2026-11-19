@@ -54,9 +54,12 @@ npm run db:seed
 | --- | --- |
 | `DATABASE_URL` | строка подключения из Neon |
 | `SESSION_SECRET` | длинная случайная строка |
-| `TELEGRAM_BOT_TOKEN` | токен из BotFather |
-| `TELEGRAM_ADMIN_CHAT_ID` | ваш chat id (необязательно) |
 | `NEXT_PUBLIC_APP_URL` | `https://ваш-домен` |
+| `NEXT_PUBLIC_TELEGRAM_BOT_URL` | `https://t.me/your_bot` (необязательно, скрывает ссылки, если пусто) |
+
+`TELEGRAM_BOT_TOKEN` на Vercel не нужен: бот работает отдельным процессом (раздел 3).
+Chat id администратора задаётся в админке (`/admin/settings`) и хранится в БД; env
+`TELEGRAM_ADMIN_CHAT_ID` остаётся fallback для воркера.
 
 Сгенерировать секрет:
 
@@ -73,16 +76,36 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ## 3. Бот
 
 Бот — отдельный долгоживущий процесс (polling), ему не нужен порт.
+Держите его запущенным постоянно: при остановке процесса бот не отвечает,
+хотя сайт и админка продолжают работать.
 
 **Railway / Fly.io / VPS:**
 
 - Start command: `npm run bot`
-- Переменные: `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_CHAT_ID`
+- Переменные: `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_CHAT_ID` (fallback)
 - Тот же Postgres, что и у веб-приложения.
 
-Проверка без запуска: `npm run bot:once` — делает `getMe` и выходит.
+**Токен:** [@BotFather](https://t.me/BotFather) → `/newbot` → скопировать токен в переменную
+`TELEGRAM_BOT_TOKEN`. Токен не коммитится и не хранится в БД.
 
-> Альтернатива — webhook на Vercel, но для портфолио polling проще и надёжнее.
+**Chat id администратора:**
+
+1. Проще всего — в админке `/admin/settings` → «Chat ID администратора». Значение пишется
+   в `Setting.admin_chat_id`, имеет приоритет над env и перечитывается ботом при каждой
+   отправке уведомления.
+2. Либо env `TELEGRAM_ADMIN_CHAT_ID` как fallback.
+3. Свой id можно узнать у [@userinfobot](https://t.me/userinfobot) или из
+   `https://api.telegram.org/bot<TOKEN>/getUpdates` после сообщения боту (токен не публикуйте).
+
+**Проверка:** `npm run bot:once` — делает `getMe`, печатает `@username` и выходит с кодом 0.
+Неверный токен завершится читаемой ошибкой Telegram (`401 Unauthorized`).
+
+**Ссылка на бота:** задайте `NEXT_PUBLIC_TELEGRAM_BOT_URL=https://t.me/your_bot` и
+пересоберите сайт. Ссылка появится на лендинге и в настройках админки; пустое значение
+её скрывает.
+
+> Для production надёжнее webhook или постоянно живущий воркер. Vercel не держит
+> долгоживущие процессы, поэтому бот туда не деплоится. Для портфолио polling проще.
 
 ---
 
@@ -132,7 +155,9 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 - [ ] `SESSION_SECRET` уникальный и не из примера.
 - [ ] `/admin` требует логин, без сессии редиректит на `/login`.
 - [ ] `/robots.txt` и `/sitemap.xml` отдают корректный домен.
+- [ ] `NEXT_PUBLIC_TELEGRAM_BOT_URL` задан, ссылка на бота видна на лендинге и в настройках.
 - [ ] Бот отвечает на `/start`, оплата Stars создаёт инвойс.
+- [ ] Уведомление о платеже приходит на chat id из админки (или env).
 - [ ] Демо-данные загружены, дашборд не пустой.
 - [ ] Ссылка на демо добавлена в профиль Upwork.
 
