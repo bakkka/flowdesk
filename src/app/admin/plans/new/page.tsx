@@ -17,7 +17,7 @@ export default async function NewPlanPage() {
         <ArrowLeft size={14} />
         {d.plans.title}
       </Link>
-      <PageHeader title={d.plans.create} subtitle={d.plans.subtitle} />
+      <PageHeader title={d.plans.create} />
       <PlanForm d={d} submitLabel={d.plans.savePlan} />
     </div>
   );

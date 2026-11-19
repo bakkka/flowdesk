@@ -74,24 +74,19 @@ export function Stat({
   label,
   value,
   hint,
-  icon,
   accent,
 }: {
   label: string;
   value: string;
   hint?: string;
-  icon?: React.ReactNode;
   accent?: boolean;
 }) {
   return (
-    <div className={cn("card card-pad relative overflow-hidden", accent && "border-accent/25")}>
+    <div className={cn("card card-pad relative overflow-hidden text-center", accent && "border-accent/25")}>
       {accent && (
         <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
       )}
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</p>
-        {icon ? <span className="text-slate-500">{icon}</span> : null}
-      </div>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</p>
       <p className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-[26px]">{value}</p>
       {hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
     </div>

@@ -1,33 +1,11 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  BarChart3,
-  BookOpen,
-  CheckCircle2,
-  CreditCard,
-  Languages,
-  Layers,
-  Send,
-  ShieldCheck,
-  Sparkles,
-  Zap,
-} from "lucide-react";
+import { Zap } from "lucide-react";
 import { getLandingStats } from "@/lib/analytics";
 import { getCurrentAdmin } from "@/lib/auth";
 import { formatMoney, formatNumber } from "@/lib/format";
 import { getDict, getLocale } from "@/lib/i18n";
-import { Badge } from "@/components/ui";
 import { LocaleSwitch } from "@/components/locale-switch";
 import { PhoneMock } from "@/components/phone";
-
-const FEATURE_ICONS = [
-  <Languages key="lang" size={18} />,
-  <CreditCard key="card" size={18} />,
-  <BookOpen key="book" size={18} />,
-  <Send key="send" size={18} />,
-  <BarChart3 key="chart" size={18} />,
-  <ShieldCheck key="shield" size={18} />,
-];
 
 export default async function LandingPage() {
   const locale = await getLocale();
@@ -36,6 +14,7 @@ export default async function LandingPage() {
 
   const adminHref = admin ? "/admin" : "/login";
   const adminLabel = admin ? d.nav.dashboard : d.landing.ctaPrimary;
+  const botUrl = process.env.NEXT_PUBLIC_TELEGRAM_BOT_URL?.trim() || null;
 
   const statsRow = [
     { value: formatNumber(locale, stats.users), label: d.landing.statUsers },
@@ -71,27 +50,18 @@ export default async function LandingPage() {
             <LocaleSwitch locale={locale} />
             <Link href={adminHref} className="btn btn-primary btn-sm">
               {adminLabel}
-              <ArrowRight size={14} />
             </Link>
           </div>
         </div>
       </header>
 
       <main>
-
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-grid" aria-hidden="true" />
           <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr] lg:pb-24">
             <div className="animate-fade-up">
-              <Badge tone="accent" className="px-3 py-1 text-[11px]">
-                <Sparkles size={12} />
-                {d.landing.badge}
-              </Badge>
-
-              <h1 className="mt-5 text-balance text-[32px] font-semibold leading-[1.08] tracking-tight text-white sm:text-[44px] lg:text-[50px]">
-                {d.landing.titleA}
-                <br />
-                <span className="gradient-text">{d.landing.titleB}</span>
+              <h1 className="text-balance text-[32px] font-semibold leading-[1.08] tracking-tight text-white sm:text-[44px] lg:text-[50px]">
+                {d.landing.title}
               </h1>
 
               <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-slate-400">
@@ -101,11 +71,20 @@ export default async function LandingPage() {
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <Link href={adminHref} className="btn btn-primary px-5 py-3">
                   {d.landing.ctaPrimary}
-                  <ArrowRight size={16} />
                 </Link>
                 <a href="#case" className="btn btn-ghost px-5 py-3">
                   {d.landing.ctaSecondary}
                 </a>
+                {botUrl ? (
+                  <a
+                    href={botUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-ghost px-5 py-3"
+                  >
+                    {d.landing.ctaBot}
+                  </a>
+                ) : null}
               </div>
 
               <p className="mt-4 font-mono text-[11px] text-slate-500">{d.landing.demoNote}</p>
@@ -136,14 +115,9 @@ export default async function LandingPage() {
 
         <section id="features" className="border-t border-line/60 py-16 sm:py-20">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-            <div className="max-w-2xl">
-              <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                {d.landing.featuresTitle}
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-400">
-                {d.landing.featuresSubtitle}
-              </p>
-            </div>
+            <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+              {d.landing.featuresTitle}
+            </h2>
 
             <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {d.landing.features.map((feature, index) => (
@@ -152,10 +126,7 @@ export default async function LandingPage() {
                   className="card card-hover group p-5"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-accent/10 text-accent-soft transition group-hover:border-accent/40">
-                    {FEATURE_ICONS[index]}
-                  </span>
-                  <h3 className="mt-4 text-[15px] font-semibold text-white">{feature.title}</h3>
+                  <h3 className="text-[15px] font-semibold text-white">{feature.title}</h3>
                   <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">{feature.text}</p>
                 </article>
               ))}
@@ -168,23 +139,15 @@ export default async function LandingPage() {
             <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               {d.landing.flowTitle}
             </h2>
-            <p className="mt-2 max-w-xl text-sm text-slate-400">{d.landing.flowSubtitle}</p>
 
             <ol className="mt-9 grid gap-4 md:grid-cols-3">
               {d.landing.flowSteps.map((step, index) => (
-                <li key={step.title} className="card relative p-5">
+                <li key={step.title} className="card p-5">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border border-accent/30 bg-accent/10 font-mono text-xs font-semibold text-accent-soft">
                     {index + 1}
                   </span>
                   <h3 className="mt-4 text-[15px] font-semibold text-white">{step.title}</h3>
                   <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">{step.text}</p>
-                  {index < 2 ? (
-                    <ArrowRight
-                      size={16}
-                      className="absolute -right-3 top-1/2 hidden -translate-y-1/2 text-slate-600 md:block"
-                      aria-hidden="true"
-                    />
-                  ) : null}
                 </li>
               ))}
             </ol>
@@ -193,17 +156,9 @@ export default async function LandingPage() {
 
         <section id="case" className="border-t border-line/60 py-16 sm:py-20">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                  {d.landing.caseTitle}
-                </h2>
-                <p className="mt-2 text-sm text-slate-400">{d.landing.caseSubtitle}</p>
-              </div>
-              <Badge tone="success">
-                <CheckCircle2 size={12} /> shipped
-              </Badge>
-            </div>
+            <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+              {d.landing.caseTitle}
+            </h2>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {d.landing.resultMetrics.map((metric) => (
@@ -216,15 +171,12 @@ export default async function LandingPage() {
 
             <div className="mt-4 grid gap-4 md:grid-cols-3">
               {[
-                { title: d.landing.problemTitle, text: d.landing.problemText, icon: <BarChart3 size={16} /> },
-                { title: d.landing.solutionTitle, text: d.landing.solutionText, icon: <Layers size={16} /> },
-                { title: d.landing.resultTitle, text: d.landing.resultText, icon: <Sparkles size={16} /> },
+                { title: d.landing.problemTitle, text: d.landing.problemText },
+                { title: d.landing.solutionTitle, text: d.landing.solutionText },
+                { title: d.landing.resultTitle, text: d.landing.resultText },
               ].map((block) => (
                 <article key={block.title} className="card p-5">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-ink-800 text-slate-300">
-                    {block.icon}
-                  </span>
-                  <h3 className="mt-3 text-[13px] font-semibold uppercase tracking-wider text-slate-500">
+                  <h3 className="text-[13px] font-semibold uppercase tracking-wider text-slate-500">
                     {block.title}
                   </h3>
                   <p className="mt-2 text-[13px] leading-relaxed text-slate-300">{block.text}</p>
@@ -239,7 +191,6 @@ export default async function LandingPage() {
             <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               {d.landing.techTitle}
             </h2>
-            <p className="mt-2 max-w-xl text-sm text-slate-400">{d.landing.techSubtitle}</p>
 
             <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {d.landing.techGroups.map((group) => (
@@ -272,9 +223,18 @@ export default async function LandingPage() {
                   <p className="mt-2 text-sm leading-relaxed text-slate-400">{d.landing.ctaText}</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
+                  {botUrl ? (
+                    <a
+                      href={botUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-ghost px-5 py-3"
+                    >
+                      {d.landing.ctaBot}
+                    </a>
+                  ) : null}
                   <Link href={adminHref} className="btn btn-primary px-5 py-3">
                     {d.landing.ctaButton}
-                    <ArrowRight size={16} />
                   </Link>
                 </div>
               </div>
@@ -294,6 +254,16 @@ export default async function LandingPage() {
             <span>{d.landing.footerNote}</span>
           </div>
           <div className="flex items-center gap-3">
+            {botUrl ? (
+              <a
+                href={botUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="transition hover:text-slate-300"
+              >
+                {d.landing.ctaBot}
+              </a>
+            ) : null}
             <LocaleSwitch locale={locale} />
           </div>
         </div>

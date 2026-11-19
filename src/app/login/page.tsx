@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ArrowRight, KeyRound, ShieldCheck, Zap } from "lucide-react";
+import { ArrowLeft, Zap } from "lucide-react";
 import { signIn } from "@/app/actions";
 import { getCurrentAdmin } from "@/lib/auth";
 import { getDict, getLocale } from "@/lib/i18n";
@@ -34,21 +34,8 @@ export default async function LoginPage({
 
         <div className="relative max-w-md">
           <h2 className="text-3xl font-semibold leading-tight tracking-tight text-white">
-            {d.landing.titleA}
-            <br />
-            <span className="gradient-text">{d.landing.titleB}</span>
+            {d.landing.title}
           </h2>
-          <p className="mt-4 text-sm leading-relaxed text-slate-400">{d.landing.subtitle}</p>
-          <ul className="mt-8 space-y-3 text-sm text-slate-300">
-            {[d.landing.features[3].title, d.landing.features[4].title, d.landing.features[0].title].map(
-              (item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <ShieldCheck size={16} className="text-mint" />
-                  {item}
-                </li>
-              ),
-            )}
-          </ul>
         </div>
 
         <p className="relative text-[11px] text-slate-600">{d.landing.footerNote}</p>
@@ -62,11 +49,7 @@ export default async function LoginPage({
           </Link>
 
           <div className="mb-8">
-            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-ink-850 text-accent-soft">
-              <KeyRound size={20} />
-            </div>
             <h1 className="text-2xl font-semibold tracking-tight text-white">{d.auth.title}</h1>
-            <p className="mt-1 text-sm text-slate-400">{d.auth.subtitle}</p>
           </div>
 
           {params.error ? <Notice tone="danger">{d.auth.error}</Notice> : null}
@@ -94,7 +77,6 @@ export default async function LoginPage({
             </Field>
             <button type="submit" className="btn btn-primary w-full">
               {d.auth.submit}
-              <ArrowRight size={16} />
             </button>
           </form>
 

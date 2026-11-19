@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Pencil, Plus, Star, Users } from "lucide-react";
+import { Check, Pencil } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { formatMoney, formatNumber } from "@/lib/format";
 import { getDict, getLocale } from "@/lib/i18n";
@@ -33,10 +33,8 @@ export default async function PlansPage({
     <div>
       <PageHeader
         title={d.plans.title}
-        subtitle={d.plans.subtitle}
         action={
           <Link href="/admin/plans/new" className="btn btn-primary">
-            <Plus size={16} />
             {d.plans.create}
           </Link>
         }
@@ -58,14 +56,6 @@ export default async function PlansPage({
                 plan.isFeatured ? "border-accent/40 shadow-glow" : ""
               }`}
             >
-              {plan.isFeatured ? (
-                <span className="absolute right-4 top-4">
-                  <Badge tone="accent">
-                    <Star size={11} /> Pro
-                  </Badge>
-                </span>
-              ) : null}
-
               <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500">{plan.code}</p>
               <h3 className="mt-1 text-lg font-semibold text-white">
                 {locale === "ru" ? plan.nameRu : plan.nameEn}
@@ -81,7 +71,7 @@ export default async function PlansPage({
                 {plan.priceRub > 0 ? <span className="text-xs text-slate-500">/ {d.common.perMonth}</span> : null}
               </div>
               <p className="mt-1 text-[11px] text-slate-500">
-                {plan.priceStars > 0 ? `${plan.priceStars} ⭐ · ` : ""}
+                {plan.priceStars > 0 ? `${plan.priceStars} Stars · ` : ""}
                 {plan.durationDays} {d.common.days}
               </p>
 
@@ -95,15 +85,18 @@ export default async function PlansPage({
               </ul>
 
               <div className="mt-5 flex items-center justify-between border-t border-line-soft pt-4">
-                <span className="flex items-center gap-1.5 text-xs text-slate-400">
-                  <Users size={13} />
+                <span className="text-xs text-slate-400">
                   {formatNumber(locale, plan.code === "free" ? freeCount : (counts.get(plan.code) ?? 0))} {d.plans.subscribers}
                 </span>
                 <div className="flex items-center gap-2">
                   <Badge tone={plan.isActive ? "success" : "muted"}>
                     {plan.isActive ? d.plans.shown : d.plans.hidden}
                   </Badge>
-                  <Link href={`/admin/plans/${plan.id}`} className="btn btn-ghost btn-sm">
+                  <Link
+                    href={`/admin/plans/${plan.id}`}
+                    className="btn btn-ghost btn-sm"
+                    aria-label={d.common.edit}
+                  >
                     <Pencil size={13} />
                   </Link>
                 </div>

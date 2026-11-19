@@ -1,30 +1,8 @@
-import {
-  BookOpen,
-  CreditCard,
-  Eye,
-  Menu as MenuIcon,
-  Send,
-  Sparkles,
-  Target,
-  UserPlus,
-  Users,
-  Wallet,
-  Zap,
-} from "lucide-react";
 import { getDashboardData } from "@/lib/analytics";
 import { formatMoney, formatNumber, formatPercent, formatRelative } from "@/lib/format";
 import { getDict, getLocale } from "@/lib/i18n";
 import { AreaChart, Donut } from "@/components/charts";
 import { Avatar, Badge, EmptyState, PageHeader, SectionCard, Stat } from "@/components/ui";
-
-const EVENT_ICONS: Record<string, React.ReactNode> = {
-  start: <Zap size={13} />,
-  plan_view: <Eye size={13} />,
-  payment: <CreditCard size={13} />,
-  material_open: <BookOpen size={13} />,
-  broadcast_sent: <Send size={13} />,
-  menu: <MenuIcon size={13} />,
-};
 
 export default async function DashboardPage() {
   const locale = await getLocale();
@@ -41,49 +19,34 @@ export default async function DashboardPage() {
     <div className="space-y-5">
       <PageHeader
         title={d.dashboard.title}
-        subtitle={d.dashboard.subtitle}
-        action={
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint/60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-mint" />
-            </span>
-            <Badge tone="neutral">{d.dashboard.period}</Badge>
-          </div>
-        }
+        action={<Badge tone="neutral">{d.dashboard.period}</Badge>}
       />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <Stat
           label={d.dashboard.users}
           value={formatNumber(locale, data.totalUsers)}
-          hint={d.dashboard.usersHint}
-          icon={<Users size={15} />}
           accent
         />
         <Stat
           label={d.dashboard.mrr}
           value={formatMoney(locale, data.mrr)}
           hint={d.dashboard.mrrHint}
-          icon={<Wallet size={15} />}
         />
         <Stat
           label={d.dashboard.activeSubs}
           value={formatNumber(locale, data.activeSubs)}
           hint={d.dashboard.activeSubsHint}
-          icon={<Sparkles size={15} />}
         />
         <Stat
           label={d.dashboard.conversion}
           value={formatPercent(locale, data.conversion)}
           hint={d.dashboard.conversionHint}
-          icon={<Target size={15} />}
         />
         <Stat
           label={d.dashboard.newUsers}
           value={formatNumber(locale, data.newUsers7)}
           hint={d.dashboard.newUsersHint}
-          icon={<UserPlus size={15} />}
         />
       </div>
 
@@ -91,13 +54,11 @@ export default async function DashboardPage() {
         <SectionCard
           className="lg:col-span-2"
           title={d.dashboard.revenue}
-          hint={d.dashboard.revenueHint}
-          action={<Badge tone="accent">{formatMoney(locale, data.mrr)}</Badge>}
         >
           <AreaChart data={data.revenueSeries} locale={locale} format="money" />
         </SectionCard>
 
-        <SectionCard title={d.dashboard.planSplit} hint={d.dashboard.planSplitHint}>
+        <SectionCard title={d.dashboard.planSplit}>
           <div className="flex flex-col items-center gap-5">
             <Donut
               slices={planSlices}
@@ -132,24 +93,17 @@ export default async function DashboardPage() {
         <SectionCard
           className="lg:col-span-2"
           title={d.dashboard.growth}
-          hint={d.dashboard.growthHint}
-          action={
-            <Badge tone="success">
-              +{formatNumber(locale, data.newUsers7)} · {d.dashboard.newUsersHint}
-            </Badge>
-          }
         >
           <AreaChart data={data.growthSeries} locale={locale} color="#34D399" />
         </SectionCard>
 
         <SectionCard
           title={d.dashboard.recent}
-          hint={d.dashboard.recentHint}
           bodyClassName="flex min-h-0 flex-col overflow-hidden p-0"
           className="overflow-hidden lg:h-[300px]"
         >
           {data.recentEvents.length === 0 ? (
-            <EmptyState title={d.dashboard.emptyEvents} icon={<Zap size={22} />} />
+            <EmptyState title={d.dashboard.emptyEvents} />
           ) : (
             <ul
               className="min-h-0 flex-1 divide-y divide-line-soft overflow-y-auto"
@@ -166,10 +120,7 @@ export default async function DashboardPage() {
                       </span>
                       {event.label ? <span className="text-slate-400"> · {event.label}</span> : null}
                     </p>
-                    <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-500">
-                      <span className="text-slate-600">
-                        {EVENT_ICONS[event.type] ?? <Zap size={12} />}
-                      </span>
+                    <p className="mt-0.5 text-[11px] text-slate-500">
                       {event.username ? `@${event.username} · ` : ""}
                       {formatRelative(locale, event.createdAt)}
                     </p>

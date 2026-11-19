@@ -36,8 +36,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <span className="text-sm font-semibold text-white">Flowdesk</span>
             </Link>
 
-            <span className="hidden text-xs text-slate-500 sm:block">{d.tagline}</span>
-
             <div className="ml-auto flex items-center gap-2 sm:gap-3">
               <LocaleSwitch locale={locale} />
 

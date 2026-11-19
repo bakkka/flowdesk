@@ -2,16 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  BookOpen,
-  CreditCard,
-  ExternalLink,
-  LayoutDashboard,
-  Send,
-  Settings,
-  Users,
-  Zap,
-} from "lucide-react";
+import { ExternalLink, Zap } from "lucide-react";
 import { cn } from "@/components/ui";
 
 export type NavLabels = {
@@ -25,12 +16,12 @@ export type NavLabels = {
 };
 
 const ITEMS = [
-  { key: "dashboard", href: "/admin", icon: LayoutDashboard },
-  { key: "users", href: "/admin/users", icon: Users },
-  { key: "plans", href: "/admin/plans", icon: CreditCard },
-  { key: "broadcasts", href: "/admin/broadcasts", icon: Send },
-  { key: "content", href: "/admin/content", icon: BookOpen },
-  { key: "settings", href: "/admin/settings", icon: Settings },
+  { key: "dashboard", href: "/admin" },
+  { key: "users", href: "/admin/users" },
+  { key: "plans", href: "/admin/plans" },
+  { key: "broadcasts", href: "/admin/broadcasts" },
+  { key: "content", href: "/admin/content" },
+  { key: "settings", href: "/admin/settings" },
 ] as const;
 
 function isActive(pathname: string, href: string) {
@@ -56,7 +47,6 @@ export function SideNav({ labels, tagline }: { labels: NavLabels; tagline: strin
       <nav className="flex-1 space-y-1 px-3">
         {ITEMS.map((item) => {
           const active = isActive(pathname, item.href);
-          const Icon = item.icon;
           return (
             <Link
               key={item.key}
@@ -68,15 +58,7 @@ export function SideNav({ labels, tagline }: { labels: NavLabels; tagline: strin
                   : "text-slate-400 hover:bg-ink-800/60 hover:text-slate-100",
               )}
             >
-              <Icon
-                size={17}
-                className={cn(
-                  "transition",
-                  active ? "text-accent-soft" : "text-slate-500 group-hover:text-slate-300",
-                )}
-              />
               {labels[item.key]}
-              {active ? <span className="ml-auto h-1.5 w-1.5 rounded-full bg-accent" /> : null}
             </Link>
           );
         })}
@@ -90,11 +72,6 @@ export function SideNav({ labels, tagline }: { labels: NavLabels; tagline: strin
           {labels.site}
           <ExternalLink size={14} />
         </Link>
-        <p className="mt-3 px-1 text-[10px] leading-relaxed text-slate-600">
-          v0.1 · demo build
-          <br />
-          Next.js · Prisma · grammY
-        </p>
       </div>
     </aside>
   );

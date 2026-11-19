@@ -1,4 +1,4 @@
-import { Megaphone, Send } from "lucide-react";
+import { Megaphone } from "lucide-react";
 import { saveBroadcast } from "@/app/actions";
 import { prisma } from "@/lib/db";
 import { formatDateTime, formatNumber } from "@/lib/format";
@@ -25,18 +25,18 @@ export default async function BroadcastsPage({
   };
 
   const notices: Record<string, { tone: "success" | "warning"; text: string }> = {
-    sent: { tone: "success", text: `${d.broadcasts.statusSent} ✓` },
+    sent: { tone: "success", text: d.broadcasts.statusSent },
     draft: { tone: "success", text: d.broadcasts.statusDraft },
     required: { tone: "warning", text: d.common.required },
   };
 
   return (
     <div className="space-y-5">
-      <PageHeader title={d.broadcasts.title} subtitle={d.broadcasts.subtitle} />
+      <PageHeader title={d.broadcasts.title} />
 
       {ok && notices[ok] ? <Notice tone={notices[ok].tone}>{notices[ok].text}</Notice> : null}
 
-      <SectionCard title={d.broadcasts.composer} hint={d.broadcasts.textHint}>
+      <SectionCard title={d.broadcasts.composer}>
         <form action={saveBroadcast} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={d.broadcasts.name}>
@@ -67,7 +67,6 @@ export default async function BroadcastsPage({
               {d.broadcasts.saveDraft}
             </button>
             <button type="submit" name="intent" value="send" className="btn btn-primary">
-              <Send size={15} />
               {d.broadcasts.sendNow}
             </button>
           </div>

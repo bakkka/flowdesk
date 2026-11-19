@@ -1,14 +1,8 @@
-import { BookOpen, Eye, EyeOff, FileText, PlayCircle, Plus } from "lucide-react";
+import { BookOpen, Eye, EyeOff } from "lucide-react";
 import { saveMaterial, toggleMaterialPublish } from "@/app/actions";
 import { prisma } from "@/lib/db";
 import { getDict, getLocale } from "@/lib/i18n";
 import { Badge, EmptyState, Field, Notice, PageHeader, SectionCard } from "@/components/ui";
-
-const KIND_ICONS: Record<string, React.ReactNode> = {
-  lesson: <BookOpen size={15} />,
-  guide: <FileText size={15} />,
-  video: <PlayCircle size={15} />,
-};
 
 export default async function ContentPage({
   searchParams,
@@ -32,7 +26,7 @@ export default async function ContentPage({
 
   return (
     <div className="space-y-5">
-      <PageHeader title={d.content.title} subtitle={d.content.subtitle} />
+      <PageHeader title={d.content.title} />
 
       {ok === "saved" ? <Notice tone="success">{d.common.saved}</Notice> : null}
       {ok === "noplan" ? <Notice tone="warning">{d.common.error}</Notice> : null}
@@ -40,7 +34,6 @@ export default async function ContentPage({
       <details className="card group overflow-hidden">
         <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4">
           <span className="flex items-center gap-2 text-sm font-semibold text-white">
-            <Plus size={16} className="text-accent-soft" />
             {d.content.create}
           </span>
           <span className="text-xs text-slate-500 group-open:hidden">▾</span>
@@ -112,10 +105,6 @@ export default async function ContentPage({
           <ul className="divide-y divide-line-soft">
             {materials.map((material) => (
               <li key={material.id} className="flex flex-wrap items-center gap-3 px-5 py-4">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-ink-800 text-slate-400">
-                  {KIND_ICONS[material.kind] ?? <BookOpen size={15} />}
-                </span>
-
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-white">
                     {locale === "ru" ? material.titleRu : material.titleEn}

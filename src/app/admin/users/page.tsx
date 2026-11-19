@@ -68,7 +68,6 @@ export default async function UsersPage({
     <div>
       <PageHeader
         title={d.users.title}
-        subtitle={d.users.subtitle}
         action={
           <Badge tone="neutral">
             {d.common.total}: {formatNumber(locale, total)}
@@ -102,7 +101,6 @@ export default async function UsersPage({
           ))}
         </select>
         <button type="submit" className="btn btn-ghost">
-          <Search size={15} />
           {d.common.search}
         </button>
       </form>

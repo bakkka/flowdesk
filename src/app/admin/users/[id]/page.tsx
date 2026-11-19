@@ -1,30 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  Ban,
-  BookOpen,
-  CreditCard,
-  Eye,
-  Globe2,
-  Send,
-  ShieldCheck,
-  Zap,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { changeUserPlan, toggleUserBlock } from "@/app/actions";
 import { prisma } from "@/lib/db";
 import { formatDate, formatDateTime, formatMoney, formatRelative } from "@/lib/format";
 import { getDict, getLocale } from "@/lib/i18n";
 import { Avatar, Badge, Notice, SectionCard } from "@/components/ui";
-
-const EVENT_ICONS: Record<string, React.ReactNode> = {
-  start: <Zap size={13} />,
-  plan_view: <Eye size={13} />,
-  payment: <CreditCard size={13} />,
-  material_open: <BookOpen size={13} />,
-  broadcast_sent: <Send size={13} />,
-  menu: <Zap size={13} />,
-};
 
 export default async function UserPage({
   params,
@@ -75,7 +56,7 @@ export default async function UserPage({
             {user.firstName} {user.lastName}
           </h1>
           <p className="mt-0.5 text-sm text-slate-400">
-            {user.username ? `@${user.username}` : user.telegramId} · {formatRelative(locale, user.lastActiveAt)}
+            {user.username ? `@${user.username}` : user.telegramId}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -90,7 +71,7 @@ export default async function UserPage({
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <SectionCard title={d.users.changePlan} hint={d.plans.subtitle}>
+          <SectionCard title={d.users.changePlan}>
             <form action={changeUserPlan} className="flex flex-wrap items-end gap-2">
               <input type="hidden" name="userId" value={user.id} />
               <label className="min-w-[200px] flex-1">
@@ -116,22 +97,19 @@ export default async function UserPage({
             ) : null}
           </SectionCard>
 
-          <SectionCard title={d.users.payments} hint={d.users.paymentsHint} bodyClassName="p-0">
+          <SectionCard title={d.users.payments} bodyClassName="p-0">
             {user.payments.length === 0 ? (
               <p className="px-5 py-8 text-center text-sm text-slate-500">{d.common.empty}</p>
             ) : (
               <ul className="divide-y divide-line-soft">
                 {user.payments.map((payment) => (
                   <li key={payment.id} className="flex items-center gap-3 px-5 py-3 text-sm">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-ink-800 text-slate-400">
-                      <CreditCard size={14} />
-                    </span>
                     <div className="min-w-0 flex-1">
                       <p className="text-slate-200">
                         {locale === "ru" ? payment.plan.nameRu : payment.plan.nameEn}
                       </p>
                       <p className="text-[11px] text-slate-500">
-                        {formatDateTime(locale, payment.createdAt)} · {payment.provider}
+                        {formatDateTime(locale, payment.createdAt)}
                       </p>
                     </div>
                     <span className="font-mono text-xs text-slate-300">
@@ -158,16 +136,13 @@ export default async function UserPage({
             )}
           </SectionCard>
 
-          <SectionCard title={d.users.events} hint={d.users.eventsHint} bodyClassName="p-0">
+          <SectionCard title={d.users.events} bodyClassName="p-0">
             {user.events.length === 0 ? (
               <p className="px-5 py-8 text-center text-sm text-slate-500">{d.dashboard.emptyEvents}</p>
             ) : (
               <ul className="divide-y divide-line-soft">
                 {user.events.map((event) => (
                   <li key={event.id} className="flex items-center gap-3 px-5 py-2.5 text-[13px]">
-                    <span className="text-slate-500">
-                      {EVENT_ICONS[event.type] ?? <Zap size={13} />}
-                    </span>
                     <span className="text-slate-300">
                       {d.dashboard.events[event.type as keyof typeof d.dashboard.events] ?? event.type}
                     </span>
@@ -190,8 +165,8 @@ export default async function UserPage({
                 <dd className="font-mono text-xs text-slate-300">{user.telegramId}</dd>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <dt className="flex items-center gap-1.5 text-slate-500">
-                  <Globe2 size={13} /> {d.common.language}
+                <dt className="text-slate-500">
+                  {d.common.language}
                 </dt>
                 <dd className="uppercase text-slate-300">{user.language}</dd>
               </div>
@@ -212,9 +187,7 @@ export default async function UserPage({
                 <dd className="text-slate-300">{formatRelative(locale, user.lastActiveAt)}</dd>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <dt className="flex items-center gap-1.5 text-slate-500">
-                  <ShieldCheck size={13} /> {d.users.paymentsCount}
-                </dt>
+                <dt className="text-slate-500">{d.users.paymentsCount}</dt>
                 <dd className="text-slate-300">{user._count.payments}</dd>
               </div>
             </dl>
@@ -227,7 +200,6 @@ export default async function UserPage({
                 type="submit"
                 className={user.status === "blocked" ? "btn btn-ghost w-full" : "btn btn-danger w-full"}
               >
-                <Ban size={15} />
                 {user.status === "blocked" ? d.users.unblock : d.users.block}
               </button>
             </form>

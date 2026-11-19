@@ -1,4 +1,4 @@
-import { Bot, MoreVertical, Send as SendIcon, Zap } from "lucide-react";
+import { Send as SendIcon, Zap } from "lucide-react";
 import { cn } from "@/components/ui";
 
 type Message = { from: string; text: string };
@@ -22,15 +22,6 @@ export function PhoneMock({
       <div className="relative rounded-[2.4rem] border border-line bg-ink-900 p-2 shadow-[0_40px_80px_-40px_rgba(0,0,0,1)]">
         <div className="overflow-hidden rounded-[2rem] border border-line-soft bg-ink-950">
 
-          <div className="flex items-center justify-between px-5 pb-1 pt-3 text-[10px] text-slate-500">
-            <span>9:41</span>
-            <span className="flex items-center gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
-              <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
-              <span className="h-1.5 w-3 rounded-sm bg-slate-500" />
-            </span>
-          </div>
-
           <div className="flex items-center gap-2.5 border-b border-line-soft px-4 py-3">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-accent to-cyan-300 text-ink-950">
               <Zap size={16} strokeWidth={2.6} />
@@ -39,7 +30,6 @@ export function PhoneMock({
               <p className="truncate text-[13px] font-semibold text-white">{title}</p>
               <p className="text-[10px] text-mint">{status}</p>
             </div>
-            <MoreVertical size={15} className="text-slate-600" />
           </div>
 
           <div className="flex h-[368px] flex-col gap-2 overflow-hidden px-3 py-3">
@@ -78,14 +68,6 @@ export function PhoneMock({
             <span className="h-1 w-24 rounded-full bg-slate-700" />
           </div>
         </div>
-      </div>
-
-      <div className="absolute -bottom-4 -left-6 hidden rounded-xl border border-line bg-ink-850/95 px-3 py-2 shadow-xl backdrop-blur sm:block">
-        <p className="flex items-center gap-1.5 text-[10px] font-medium text-slate-300">
-          <Bot size={12} className="text-accent-soft" />
-          payment received
-        </p>
-        <p className="mt-0.5 font-mono text-[11px] text-mint">+890 ₽</p>
       </div>
     </div>
   );
