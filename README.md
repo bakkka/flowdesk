@@ -132,10 +132,17 @@ docs/
 
 ## Деплой (когда будете готовы)
 
-1. Postgres (Neon/Supabase) → поменять `provider` на `postgresql` и `DATABASE_URL`.
-2. Vercel: `DATABASE_URL`, `SESSION_SECRET`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_TELEGRAM_BOT_URL`.
-3. Бот — отдельный постоянно запущенный процесс (Railway/Fly/VPS), тот же `DATABASE_URL`,
+1. Vercel: импортировать репозиторий. `vercel.json` запускает `npm run vercel-build`: клиент Prisma генерируется из Postgres-версии схемы, локальная разработка остаётся на SQLite.
+2. Postgres (Neon/Supabase) → добавить `DATABASE_URL` в проект Vercel (pooled URL с `?sslmode=require`).
+3. С локальной машины накатить схему и seed один раз:
+
+   ```bash
+   DATABASE_URL="postgresql://user:pass@host/db?sslmode=require" npm run db:push:postgres
+   DATABASE_URL="postgresql://user:pass@host/db?sslmode=require" npm run db:seed:postgres
+   ```
+
+4. В Vercel задать `SESSION_SECRET`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_TELEGRAM_BOT_URL`.
+5. Бот — отдельный постоянно запущенный процесс (Railway/Fly/VPS), тот же `DATABASE_URL`,
    `TELEGRAM_BOT_TOKEN`; chat id задаётся в админке или через `TELEGRAM_ADMIN_CHAT_ID`.
-4. `prisma migrate deploy` + seed для демо-стенда.
 
 > Данные в демо синтетические, оплата имитируется. Это портфолио-кейс, а не продакшн-сервис.
